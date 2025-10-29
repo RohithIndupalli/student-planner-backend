@@ -4,8 +4,8 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langgraph.graph import StateGraph, END
 from typing import TypedDict, Annotated, Sequence
 import operator
-from config import settings
-from database import get_database
+from backend.config import settings
+from backend.database import get_database
 from datetime import datetime
 
 # Define the state for our graph
