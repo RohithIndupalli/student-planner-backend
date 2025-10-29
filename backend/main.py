@@ -29,7 +29,8 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:5173",
         "https://student-planner-frontend.onrender.com",
-        "https://student-planner-backend.onrender.com"
+        "https://student-planner-frontend-1.onrender.com",
+        "https://student-planner-backend-hjpl.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
