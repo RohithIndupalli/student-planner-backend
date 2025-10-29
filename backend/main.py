@@ -8,12 +8,34 @@ from backend.routers import auth, courses, assignments, schedules, chat
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    await connect_to_mongo()
-    start_scheduler()
+    try:
+        await connect_to_mongo()
+        print("✅ Successfully connected to MongoDB")
+    except Exception as e:
+        print(f"❌ Failed to connect to MongoDB: {e}")
+        raise
+        
+    try:
+        start_scheduler()
+        print("✅ Scheduler started successfully")
+    except Exception as e:
+        print(f"❌ Failed to start scheduler: {e}")
+        raise
+        
     yield
+    
     # Shutdown
-    stop_scheduler()
-    await close_mongo_connection()
+    try:
+        stop_scheduler()
+        print("🛑 Scheduler stopped")
+    except Exception as e:
+        print(f"⚠️ Error stopping scheduler: {e}")
+        
+    try:
+        await close_mongo_connection()
+        print("🛑 MongoDB connection closed")
+    except Exception as e:
+        print(f"⚠️ Error closing MongoDB connection: {e}")
 
 app = FastAPI(
     title="Student Academic Planner API",
