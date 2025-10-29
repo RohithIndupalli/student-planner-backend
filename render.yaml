@@ -1,0 +1,37 @@
+services:
+  # Backend Service
+  - type: web
+    name: student-planner-backend
+    env: python
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: MONGODB_URI
+        value: mongodb+srv://agentic_ai:Indup2414@cluster0.0s5q7br.mongodb.net/student_planner?retryWrites=true&w=majority&appName=Cluster0
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_REFRESH_SECRET_KEY
+        generateValue: true
+      - key: OPENAI_API_KEY
+        value: your_openai_api_key_here
+      - key: ENVIRONMENT
+        value: production
+
+  # Frontend Service
+  - type: web
+    name: student-planner-frontend
+    env: node
+    buildCommand: |
+      cd frontend
+      npm install
+      npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://student-planner-backend.onrender.com
+      - key: NODE_VERSION
+        value: 18.x
