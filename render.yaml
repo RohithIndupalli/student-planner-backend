@@ -10,14 +10,28 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.0
-      - key: MONGODB_URI
-        value: mongodb+srv://agentic_ai:Indup2414@cluster0.0s5q7br.mongodb.net/student_planner?retryWrites=true&w=majority&appName=Cluster0
-      - key: JWT_SECRET_KEY
+      - key: MONGODB_URL
+        value: mongodb+srv://agentic_ai:Indup2414@cluster0.0s5q7br.mongodb.net/student_management?retryWrites=true&w=majority&appName=Cluster0
+      - key: DATABASE_NAME
+        value: student_management
+      - key: SECRET_KEY
         generateValue: true
-      - key: JWT_REFRESH_SECRET_KEY
-        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
       - key: OPENAI_API_KEY
         value: your_openai_api_key_here
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        value: your-email@gmail.com
+      - key: SMTP_PASSWORD
+        value: your-app-password
+      - key: EMAIL_FROM
+        value: your-email@gmail.com
       - key: ENVIRONMENT
         value: production
 
