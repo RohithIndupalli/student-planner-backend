@@ -7,8 +7,19 @@ load_dotenv()
 
 class Settings(BaseSettings):
     # MongoDB
-    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb://localhost:27017/student_management")
+    MONGODB_URL: str = os.getenv(
+        "MONGODB_URL",
+        os.getenv(
+            "MONGODB_URI",  # Fallback to MONGODB_URI if MONGODB_URL is not set
+            "mongodb+srv://agentic_ai:Indup2414@cluster0.0s5q7br.mongodb.net/student_management?retryWrites=true&w=majority&appName=Cluster0"
+        )
+    )
     DATABASE_NAME: str = os.getenv("DATABASE_NAME", "student_management")
+    
+    def __init__(self, **data):
+        super().__init__(**data)
+        print(f"🔧 Using MongoDB URL: {self.MONGODB_URL}")
+        print(f"🔧 Using Database: {self.DATABASE_NAME}")
     
     # JWT
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")

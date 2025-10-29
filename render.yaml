@@ -6,12 +6,18 @@ services:
     buildCommand: |
       pip install --upgrade pip
       pip install -r backend/requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    startCommand: bash backend/start.sh
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.0
-      - key: MONGODB_URL
+      - key: MONGODB_URI
         value: mongodb+srv://agentic_ai:Indup2414@cluster0.0s5q7br.mongodb.net/student_management?retryWrites=true&w=majority&appName=Cluster0
+      - key: MONGODB_URL
+        sync: false
+        from:
+          name: student-planner-backend
+          type: env_var
+          key: MONGODB_URI
       - key: DATABASE_NAME
         value: student_management
       - key: SECRET_KEY
@@ -34,6 +40,10 @@ services:
         value: your-email@gmail.com
       - key: ENVIRONMENT
         value: production
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PYTHONPATH
+        value: /opt/render/project/src
 
   # Frontend Service
   - type: web
