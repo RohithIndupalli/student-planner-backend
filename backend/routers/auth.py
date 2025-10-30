@@ -60,8 +60,25 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_info(current_user: dict = Depends(get_current_user)):
     """Get current user information"""
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    if "_id" not in current_user:
+        # Try to get the user by email if _id is not available
+        user = await db.users.find_one({"email": current_user.get("email")})
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        current_user = user
+    
     return UserResponse(
-        id=str(current_user["_id"]),
-        email=current_user["email"],
-        full_name=current_user["full_name"]
+        id=str(current_user.get("_id", "")),
+        email=current_user.get("email", ""),
+        full_name=current_user.get("full_name", "")
     )

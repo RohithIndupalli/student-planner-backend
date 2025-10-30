@@ -44,14 +44,15 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware
+# CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For development only - replace with specific origins in production
+    allow_origins=["*"],  # For development - replace with specific origins in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"]
+    expose_headers=["Content-Type", "Authorization", "*"],
+    max_age=600  # Cache preflight response for 10 minutes
 )
 
 # Handle OPTIONS method for CORS preflight
