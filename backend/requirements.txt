@@ -35,13 +35,13 @@ pytz==2023.3
 schedule==1.2.0
 
 # OpenAI and AI
-openai==0.28.1
-tiktoken==0.5.2  # Downgraded to be compatible with langchain-openai
+openai>=1.6.1,<2.0.0  # Updated to be compatible with langchain-openai
+tiktoken>=0.5.2,<0.6.0  # Updated to be compatible with langchain-openai
 
 # LangChain (compatible with Pydantic 1.x)
-langchain==0.0.339
-langchain-openai==0.0.2.post1
-langchain-core==0.0.10
+langchain>=0.0.339
+langchain-openai>=0.0.2.post1
+langchain-core>=0.0.10,<0.1.0  # Ensure compatibility with langchain-openai
 langgraph==0.0.15
 
 # File Handling
