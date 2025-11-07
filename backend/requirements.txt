@@ -36,7 +36,7 @@ schedule==1.2.0
 
 # OpenAI and AI
 openai==0.28.1
-tiktoken==0.7.0
+tiktoken==0.5.2  # Downgraded to be compatible with langchain-openai
 
 # LangChain (compatible with Pydantic 1.x)
 langchain==0.0.267
