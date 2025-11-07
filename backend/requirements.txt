@@ -1,50 +1,62 @@
 # Core FastAPI and ASGI
-fastapi>=0.95.0,<0.96.0
-uvicorn>=0.21.0,<0.22.0
+fastapi==0.95.2
+uvicorn==0.21.1
+starlette==0.27.0
 
 # MongoDB
-dnspython>=2.3.0,<3.0.0
-motor>=3.3.1,<4.0.0
-pymongo>=4.5.0,<5.0.0
+dnspython==2.8.0
+motor==3.3.2
+pymongo==4.5.0
 
 # Data Validation
-pydantic>=1.10.13,<2.0.0
+pydantic==1.10.13
 
 # Authentication and Security
-python-jose[cryptography]>=3.3.0,<4.0.0
-passlib[bcrypt]>=1.7.4,<2.0.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
 bcrypt==3.2.2
+python-multipart==0.0.6
 
 # HTTP and Async
-aiohttp>=3.8.3,<4.0.0  # Updated to be compatible with langchain
-python-multipart>=0.0.6,<0.1.0
-requests>=2.26.0,<3.0.0
+aiohttp==3.8.5
+requests==2.31.0
 
 # Environment and Configuration
-python-dotenv>=1.0.0,<2.0.0
-python-decouple>=3.6,<4.0.0
+python-dotenv==1.0.0
+python-decouple==3.8
 
 # Email
-email-validator>=1.3.1,<2.0.0
-aiosmtplib>=3.0.1,<4.0.0
+email-validator==1.3.1
+aiosmtplib==3.0.1
 
 # Date and Time
-python-dateutil>=2.8.2,<3.0.0
-pytz>=2021.3,<2024.0
-schedule>=1.1.0,<2.0.0
+python-dateutil==2.8.2
+pytz==2023.3
+schedule==1.2.0
 
 # OpenAI and AI
-openai>=0.28.0,<0.29.0
-tiktoken>=0.7.0,<0.8.0
+openai==0.28.1
+tiktoken==0.7.0
 
 # LangChain (compatible with Pydantic 1.x)
-langchain>=0.0.267,<0.0.300
-langchain-openai>=0.0.2.post1,<0.0.3
-langchain-core>=0.1.0,<0.2.0
-langgraph>=0.0.15,<0.0.16
+langchain==0.0.267
+langchain-openai==0.0.2.post1
+langchain-core==0.0.1
+langgraph==0.0.15
 
 # File Handling
-aiofiles>=0.7.0,<0.8.0
+aiofiles==0.7.0
 
 # Scheduling
-apscheduler>=3.10.4,<4.0.0
+apscheduler==3.10.4
+
+# Required Dependencies
+anyio==3.7.1
+click==8.1.7
+cryptography==41.0.7
+h11==0.14.0
+numpy==1.26.4
+PyYAML==6.0.1
+SQLAlchemy==2.0.23
+tqdm==4.66.1
+typing-extensions==4.8.0
