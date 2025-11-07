@@ -67,18 +67,35 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    if "_id" not in current_user:
-        # Try to get the user by email if _id is not available
+    db = await get_database()
+    
+    # If _id is a string, try to convert it to ObjectId
+    user_id = current_user.get("_id")
+    if isinstance(user_id, str):
+        try:
+            user_id = ObjectId(user_id)
+        except:
+            pass
+    
+    # Try to get the user by _id or email
+    user = None
+    if user_id:
+        user = await db.users.find_one({"_id": user_id})
+    
+    if not user and current_user.get("email"):
         user = await db.users.find_one({"email": current_user.get("email")})
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
-        current_user = user
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    # Convert ObjectId to string for the response
+    user["_id"] = str(user["_id"])
     
     return UserResponse(
-        id=str(current_user.get("_id", "")),
-        email=current_user.get("email", ""),
-        full_name=current_user.get("full_name", "")
+        id=user["_id"],
+        email=user.get("email", ""),
+        full_name=user.get("full_name", "")
     )

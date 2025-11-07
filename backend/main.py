@@ -44,35 +44,50 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Allowed origins - update this list with your frontend URLs
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://student-planner-backend-1.onrender.com",
+    "https://student-planner-backend-hjpl.onrender.com"
+]
+
 # CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For development - replace with specific origins in production
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["Content-Type", "Authorization", "*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "Accept"],
+    expose_headers=["Content-Type", "Content-Length", "Authorization"],
     max_age=600  # Cache preflight response for 10 minutes
 )
 
 # Handle OPTIONS method for CORS preflight
 @app.middleware("http")
 async def add_cors_headers(request: Request, call_next):
+    # Handle preflight requests
     if request.method == "OPTIONS":
         response = Response(
-            status_code=status.HTTP_200_OK,
-            content="OK",
-            media_type="text/plain"
+            status_code=status.HTTP_204_NO_CONTENT,
+            headers={
+                "Access-Control-Allow-Origin": request.headers.get("Origin", ""),
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Max-Age": "600",  # 10 minutes
+            },
         )
-    else:
-        response = await call_next(request)
+        return response
     
-    origin = request.headers.get('Origin', '*')
-    response.headers["Access-Control-Allow-Origin"] = origin
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Expose-Headers"] = "*"
+    # Process the request
+    response = await call_next(request)
+    
+    # Add CORS headers to the response
+    origin = request.headers.get("Origin")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    
     return response
 
 # Include routers
