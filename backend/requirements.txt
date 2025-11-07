@@ -39,9 +39,9 @@ openai==0.28.1
 tiktoken==0.5.2  # Downgraded to be compatible with langchain-openai
 
 # LangChain (compatible with Pydantic 1.x)
-langchain==0.0.267
+langchain==0.0.339
 langchain-openai==0.0.2.post1
-langchain-core==0.0.1
+langchain-core==0.0.10
 langgraph==0.0.15
 
 # File Handling
