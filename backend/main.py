@@ -47,8 +47,10 @@ app = FastAPI(
 # Allowed origins - update this list with your frontend URLs
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:3001",
     "https://student-planner-backend-1.onrender.com",
-    "https://student-planner-backend-hjpl.onrender.com"
+    "https://student-planner-backend-hjpl.onrender.com",
+    "https://student-planner-frontend.onrender.com"  # Add your frontend URL here
 ]
 
 # CORS middleware configuration
@@ -56,25 +58,32 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "Accept"],
-    expose_headers=["Content-Type", "Content-Length", "Authorization"],
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+    expose_headers=["*"],  # Expose all headers
     max_age=600  # Cache preflight response for 10 minutes
 )
 
-# Handle OPTIONS method for CORS preflight
+# Debug middleware to log CORS headers
 @app.middleware("http")
-async def add_cors_headers(request: Request, call_next):
+async def log_cors_headers(request: Request, call_next):
+    # Log the incoming request
+    print(f"\n=== Incoming Request ===")
+    print(f"Method: {request.method}")
+    print(f"URL: {request.url}")
+    print(f"Headers: {dict(request.headers)}")
+    
     # Handle preflight requests
     if request.method == "OPTIONS":
+        print("Handling OPTIONS preflight request")
         response = Response(
             status_code=status.HTTP_204_NO_CONTENT,
             headers={
-                "Access-Control-Allow-Origin": request.headers.get("Origin", ""),
+                "Access-Control-Allow-Origin": request.headers.get("Origin", "*"),
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Max-Age": "600",  # 10 minutes
+                "Access-Control-Max-Age": "600",
             },
         )
         return response
@@ -86,7 +95,17 @@ async def add_cors_headers(request: Request, call_next):
     origin = request.headers.get("Origin")
     if origin in ALLOWED_ORIGINS:
         response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Credentials"] = "true"
+    else:
+        # For debugging, allow any origin in development
+        response.headers["Access-Control-Allow-Origin"] = "*"
+    
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Expose-Headers"] = "*"
+    
+    # Log the response headers
+    print(f"\n=== Response Headers ===")
+    for key, value in response.headers.items():
+        print(f"{key}: {value}")
     
     return response
 

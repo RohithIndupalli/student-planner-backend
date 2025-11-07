@@ -2,7 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from backend.models import UserCreate, UserResponse, Token, User
-from backend.auth_utils import get_password_hash, verify_password, create_access_token, get_current_user
+from backend.auth_utils import (
+    get_password_hash, 
+    verify_password, 
+    create_access_token, 
+    get_current_user,
+    create_tokens  # Add this import
+)
 from backend.database import get_database
 from backend.config import settings
 from bson import ObjectId
