@@ -59,25 +59,31 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     # Convert ObjectId to string for the token
     user_id = str(user["_id"])
     
-    # Create token with user data including type
+    # Create token data with required claims
     token_data = {
         "sub": user["email"],
         "user_id": user_id,
-        "email": user["email"],
-        "type": "access"  # Add type to match what get_current_user expects
+        "email": user["email"]
     }
     
-    # Create access token directly to ensure correct structure
+    # Create access token with expiration
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data=token_data,
         expires_delta=access_token_expires
     )
     
-    # Create refresh token
-    refresh_token = create_refresh_token(data=token_data)
+    # For refresh token, we'll use a longer expiration
+    refresh_token_expires = timedelta(days=7)
+    refresh_token = create_access_token(
+        data={
+            **token_data,
+            "type": "refresh"
+        },
+        expires_delta=refresh_token_expires
+    )
     
-    tokens = {
+    return {
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer"
