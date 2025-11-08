@@ -7,7 +7,8 @@ from backend.auth_utils import (
     verify_password, 
     create_access_token, 
     get_current_user,
-    create_tokens  # Add this import
+    create_tokens,
+    create_refresh_token  # Add this import
 )
 from backend.database import get_database
 from backend.config import settings
@@ -58,15 +59,29 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     # Convert ObjectId to string for the token
     user_id = str(user["_id"])
     
-    # Create token with user data
+    # Create token with user data including type
     token_data = {
         "sub": user["email"],
         "user_id": user_id,
-        "email": user["email"]
+        "email": user["email"],
+        "type": "access"  # Add type to match what get_current_user expects
     }
     
-    # Create tokens
-    tokens = create_tokens(token_data)
+    # Create access token directly to ensure correct structure
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data=token_data,
+        expires_delta=access_token_expires
+    )
+    
+    # Create refresh token
+    refresh_token = create_refresh_token(data=token_data)
+    
+    tokens = {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }
     
     return tokens
 

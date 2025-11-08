@@ -35,18 +35,27 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     )
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
+        
+        # Check token type
+        if payload.get("type") != "access":
             raise credentials_exception
-        token_data = TokenData(email=email)
-    except JWTError:
+            
+        # Get user data from token
+        user_id = payload.get("user_id")
+        email = payload.get("email")
+        
+        if not email or not user_id:
+            raise credentials_exception
+            
+        # Return user data from token
+        return {
+            "_id": user_id,
+            "email": email
+        }
+        
+    except JWTError as e:
+        print(f"JWT Error: {e}")
         raise credentials_exception
-    
-    db = await get_database()
-    user = await db.users.find_one({"email": token_data.email})
-    if user is None:
-        raise credentials_exception
-    return user
 
 async def get_current_user_id(current_user: dict = Depends(get_current_user)) -> str:
     return str(current_user["_id"])
