@@ -58,16 +58,16 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods
-    allow_headers=["*"],  # Allow all headers
-    expose_headers=["*"],  # Expose all headers
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
+    expose_headers=["Authorization", "Content-Type"],
     max_age=600  # Cache preflight response for 10 minutes
 )
 
-# Debug middleware to log CORS headers
+# Custom CORS middleware to handle preflight requests
 @app.middleware("http")
-async def log_cors_headers(request: Request, call_next):
-    # Log the incoming request
+async def custom_cors_middleware(request: Request, call_next):
+    # Log incoming requests
     print(f"\n=== Incoming Request ===")
     print(f"Method: {request.method}")
     print(f"URL: {request.url}")
@@ -76,17 +76,32 @@ async def log_cors_headers(request: Request, call_next):
     # Handle preflight requests
     if request.method == "OPTIONS":
         print("Handling OPTIONS preflight request")
-        response = Response(
+        origin = request.headers.get("Origin")
+        
+        # Check if the origin is allowed
+        if origin not in ALLOWED_ORIGINS:
+            return Response(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content="Origin not allowed",
+                headers={
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                    "Access-Control-Allow-Headers": "Authorization, Content-Type",
+                    "Access-Control-Max-Age": "600"
+                }
+            )
+        
+        # Return successful preflight response
+        return Response(
             status_code=status.HTTP_204_NO_CONTENT,
             headers={
-                "Access-Control-Allow-Origin": request.headers.get("Origin", "*"),
+                "Access-Control-Allow-Origin": origin,
                 "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                "Access-Control-Allow-Headers": "*",
+                "Access-Control-Allow-Headers": "Authorization, Content-Type",
                 "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Max-Age": "600",
-            },
+                "Access-Control-Max-Age": "600"
+            }
         )
-        return response
     
     # Process the request
     response = await call_next(request)
@@ -95,15 +110,10 @@ async def log_cors_headers(request: Request, call_next):
     origin = request.headers.get("Origin")
     if origin in ALLOWED_ORIGINS:
         response.headers["Access-Control-Allow-Origin"] = origin
-    else:
-        # For debugging, allow any origin in development
-        response.headers["Access-Control-Allow-Origin"] = "*"
-    
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Expose-Headers"] = "*"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
     
     # Log the response headers
-    print(f"\n=== Response Headers ===")
+    print("\n=== Response Headers ===")
     for key, value in response.headers.items():
         print(f"{key}: {value}")
     
